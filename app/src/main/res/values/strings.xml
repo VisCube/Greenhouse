@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Smart GreenHouse</string>
+    <!-- Strings used for fragments for navigation -->
+
+    <string name="wi_fi_bluetooth">Отправить данные о Wi-Fi сети через Bluetooth</string>
+    <string name="temperatureReferenceLabel">Эталон влажности:</string>
+    <string name="humidityReferenceLabel">Эталон влажности:</string>
+    <string name="LightReferenceLabel">Эталон освещенности:</string>
+    <string name="currentTemperatureLabel">Температура: </string>
+    <string name="currentHumidityLabel">Влажность: </string>
+    <string name="currentLightLabel">Освещенность: </string>
+    <string name="changeApiKey">Изменить API-ключ</string>
+    <string name="setReferenceButton">Просмотр показателей</string>
+    <string name="showApiKey">API ключ:</string>
+    <string name="wiFiPassword">Wi-Fi пароль</string>
+    <string name="wiFiSsid">Wi-Fi SSID</string>
+    <string name="scanBluetoothDevices">Сканирование Bluetooth устройств</string>
+    <string name="sendWiFiData">Отправить данные Wi-Fi</string>
+    <string name="saveApiKey">Сохранить API-ключ</string>
+    <string name="sendReferencesValues">Отправить эталонные значения</string>
+    <string name="showChosenDevice">Выбранное устройство: </string>
+</resources>
