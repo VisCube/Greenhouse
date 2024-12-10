@@ -336,13 +336,9 @@ void setup() {
     messagesCounter = messagesStorage.read();
 
     initBluetooth();
-
-    wifiCon = {"RT-WiFi-92DD", "4aCKeTiKYy"};
-    ids = {1, 1, 2, 3, 1, 2, 3, 4};
 }
 
 int iterCounter = 0;
-
 void loop() {
     readSensors();
     checkReferences();
