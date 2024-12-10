@@ -18,8 +18,8 @@
 #define PIN_HEATER 5
 
 /* Данные для передачи данных на сервер */
-#define SERVER_ADDRESS "192.168.0.11"
-#define SERVER_PORT 8000
+#define SERVER_ADDRESS "..."
+#define SERVER_PORT ...
 #define SERVER_ENDPOINT_DEVICES "/api/devices/"
 #define SERVER_ENDPOINT_SENSORS "/api/sensors/%d/"
 #define SERVER_ENDPOINT_ACTUATORS "/api/actuators/%d/"
