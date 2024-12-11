@@ -8,5 +8,6 @@ data class Sensor(
     val id: Int,
     val type: String,
     val reference: Float,
-    val reading: Float
+    val reading: Float,
+    val device: Int
 )

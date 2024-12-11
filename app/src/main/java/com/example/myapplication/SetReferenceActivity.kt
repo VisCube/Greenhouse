@@ -24,6 +24,12 @@ class SetReferenceActivity : AppCompatActivity() {
         val apiKey = preferences.getString("api_key", "No API Key Set")
         binding.apiKeyTextView.text = apiKey
 
+        val currentApiKey = preferences.getString("api_key", "")
+        var greenhouseData: GreenhouseData?
+        if (!currentApiKey.isNullOrEmpty()) {
+            fetchGreenhouseData(currentApiKey)
+        }
+
         binding.lightSlider.addOnChangeListener { _, value, _ ->
             binding.lightLabel.text = "Эталон освещенности: ${value.toInt()}"
         }
@@ -44,11 +50,6 @@ class SetReferenceActivity : AppCompatActivity() {
         binding.setReferences.setOnClickListener {
             sendReferenceValues(apiKey ?: "")
         }
-
-        val currentApiKey = preferences.getString("api_key", "")
-        if (!currentApiKey.isNullOrEmpty()) {
-            fetchGreenhouseData(currentApiKey)
-        }
     }
 
     override fun onResume() {
@@ -62,68 +63,79 @@ class SetReferenceActivity : AppCompatActivity() {
         binding.apiKeyTextView.text = apiKey;
     }
 
-    private fun fetchGreenhouseData(apiKey: String) {
-        RetrofitClient.api.getGreenhouseData(apiKey).enqueue(object : Callback<GreenhouseData> {
-            override fun onResponse(
-                call: Call<GreenhouseData>,
-                response: Response<GreenhouseData>
-            ) {
-                if (response.isSuccessful) {
-                    val data = response.body()
-                    if (data != null) {
-                        binding.currentLightTextView.text =
-                            "Текущая освещенность: ${data.sensors[0].reading}°C"
-                        binding.currentHumidityTextView.text =
-                            "Текущая влажность: ${data.sensors[1].reading}%"
-                        binding.currentTemperatureTextView.text =
-                            "Текущая температура: ${data.sensors[3].reading}}%"
-                        binding.lightSlider.value = data.sensors[0].reference;
-                        binding.humiditySlider.value = data.sensors[1].reference;
-                        binding.temperatureSlider.value = data.sensors[2].reference;
-                    } else {
-                        Toast.makeText(
-                            this@SetReferenceActivity,
-                            "No data received",
-                            Toast.LENGTH_SHORT
-                        ).show()
+    private fun fetchGreenhouseData(apiKey: String){
+        try {
+            RetrofitClient.api.getGreenhouseData()
+                .enqueue(object : Callback<GreenhouseData> { //TODO
+                    override fun onResponse(
+                        call: Call<GreenhouseData>,
+                        response: Response<GreenhouseData>
+                    ) {
+                        if (response.isSuccessful) {
+                            val data = response.body()
+                            if (data != null) {
+                                binding.currentLightTextView.text =
+                                    "Текущая освещенность: ${data.sensors[0].reading}"
+                                binding.currentHumidityTextView.text =
+                                    "Текущая влажность: ${data.sensors[1].reading}%"
+                                binding.currentTemperatureTextView.text =
+                                    "Текущая температура: ${data.sensors[2].reading}°C"
+                                binding.lightSlider.value = data.sensors[0].reference;
+                                binding.humiditySlider.value = data.sensors[1].reference;
+                                binding.temperatureSlider.value = data.sensors[2].reference;
+                            } else {
+                                Toast.makeText(
+                                    this@SetReferenceActivity,
+                                    "No data received",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } else {
+                            Toast.makeText(
+                                this@SetReferenceActivity,
+                                "Failed to fetch data",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-                } else {
-                    Toast.makeText(
-                        this@SetReferenceActivity,
-                        "Failed to fetch data",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
 
-            override fun onFailure(call: Call<GreenhouseData>, t: Throwable) {
-                if (t is UnknownHostException) {
-                    Toast.makeText(
-                        this@SetReferenceActivity,
-                        "Error: Unable to connect to server. Check the server address.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-                    Toast.makeText(
-                        this@SetReferenceActivity,
-                        "Error: ${t.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        })
+                    override fun onFailure(call: Call<GreenhouseData>, t: Throwable) {
+                        if (t is UnknownHostException) {
+                            Toast.makeText(
+                                this@SetReferenceActivity,
+                                "Error: Unable to connect to server. Check the server address.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                this@SetReferenceActivity,
+                                "Error: ${t.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                })
+        } catch (e: Exception) {
+            Toast.makeText(
+                this@SetReferenceActivity,
+                "Unexpected error: ${e.localizedMessage}",
+                Toast.LENGTH_LONG
+            ).show()
+
+        }
     }
 
     private fun sendReferenceValues(apiKey: String) {
-        val referenceData = GreenhouseData(
+
+        val referenceData = GreenhouseReferences(
             sensors = listOf(
-                Sensor(1, "light", binding.lightSlider.value, 0f),
-                Sensor(2, "moist", binding.humiditySlider.value, 0f),
-                Sensor(3, "temperature", binding.temperatureSlider.value, 0f)
+                SensorReference(1, binding.lightSlider.value),
+                SensorReference(2, binding.humiditySlider.value),
+                SensorReference(3, binding.temperatureSlider.value)
             )
         )
 
-        RetrofitClient.api.updateGreenhouseData(apiKey, referenceData)
+        RetrofitClient.api.updateGreenhouseData(referenceData)
             .enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if (response.isSuccessful) {
