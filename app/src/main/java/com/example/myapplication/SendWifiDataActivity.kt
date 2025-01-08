@@ -49,7 +49,7 @@ class SendWifiDataActivity : AppCompatActivity() {
             if (deniedPermissions.isNotEmpty()) {
                 showToast("Необходимо предоставить разрешения для работы с Bluetooth и расположением.")
             } else {
-                initializeBluetooth()
+                checkBluetooth()
             }
         }
 
@@ -71,8 +71,7 @@ class SendWifiDataActivity : AppCompatActivity() {
             val ssid = binding.editTextSsid.text.toString()
             val password = binding.editTextPassword.text.toString()
             if (ssid.isNotBlank()) {
-                val data = "{\"ssid\": \"$ssid\", \"pass\": \"$password\"}"
-                sendWifiData(data)
+                sendWifiData("{\"command\": \"setWiFi\", \"ssid\": \"$ssid\", \"pass\": \"$password\"}")
             } else {
                 showToast("Заполните SSID")
             }
@@ -90,7 +89,11 @@ class SendWifiDataActivity : AppCompatActivity() {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
                 permissionsToRequest.add(Manifest.permission.BLUETOOTH_SCAN)
             }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
         }
+        // Для API 29 и 30 только разрешение на геолокацию необходимо
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -99,21 +102,27 @@ class SendWifiDataActivity : AppCompatActivity() {
         if (permissionsToRequest.isNotEmpty()) {
             requestPermissionsLauncher.launch(permissionsToRequest.toTypedArray())
         } else {
-            initializeBluetooth()
+            checkBluetooth()
         }
     }
 
-    private fun initializeBluetooth() {
+    private fun checkBluetooth(): Boolean {
         val bluetoothAdapter = bluetoothManager.adapter
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled) {
             showToast("Включите Bluetooth для отправки данных")
-            return
+            return false
         }
-        bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
+        return true;
     }
 
+    //TODO добавить фильтр для ардуино
     @SuppressLint("MissingPermission")
     private fun startScan() {
+        if (!checkBluetooth()) {
+            return
+        }
+        bluetoothLeScanner = bluetoothManager.adapter.bluetoothLeScanner
+
         showToast("Начинаем поиск BLE-устройств...")
         bleDevices.clear()
         val scanFilters = listOf<ScanFilter>()
