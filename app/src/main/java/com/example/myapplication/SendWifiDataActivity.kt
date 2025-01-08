@@ -1,121 +1,237 @@
 package com.example.myapplication
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothDevice.TRANSPORT_LE
+import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothGatt.GATT_SUCCESS
+import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothManager
-import android.bluetooth.BluetoothSocket
+import android.bluetooth.BluetoothProfile
+import android.bluetooth.le.BluetoothLeScanner
+import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanFilter
+import android.bluetooth.le.ScanResult
+import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.myapplication.databinding.ActivitySendWifiDataBinding
-import java.io.IOException
 import java.util.UUID
+
 
 class SendWifiDataActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySendWifiDataBinding
     private lateinit var bluetoothManager: BluetoothManager
+    private lateinit var bluetoothLeScanner: BluetoothLeScanner
     private var selectedDevice: BluetoothDevice? = null
-    private var bluetoothSocket: BluetoothSocket? = null
+    private var bluetoothGatt: BluetoothGatt? = null
+    private val bleDevices = mutableListOf<BluetoothDevice>()
+    private var scanning = false
+    private val scanHandler = Handler(Looper.getMainLooper())
 
-    private val uuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
+    //TODO написать UUID из итогового скетча ардуино
+    private val serviceUUID: UUID = UUID.fromString("12345678-1234-1234-1234-123456789abc")
+    private val characteristicUUID: UUID = UUID.fromString("87654321-4321-4321-4321-cba987654321")
+
+    private val requestPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val deniedPermissions = permissions.filter { !it.value }.keys
+            if (deniedPermissions.isNotEmpty()) {
+                showToast("Необходимо предоставить разрешения для работы с Bluetooth и расположением.")
+            } else {
+                initializeBluetooth()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySendWifiDataBinding.inflate(layoutInflater)
         setContentView(binding.root)
         bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        requestPermissions()
-
+        requestPermissionsIfNeeded()
         binding.btnScanDevices.setOnClickListener {
-            scanBluetoothDevices()
+            if (!scanning) {
+                startScan()
+            } else {
+                stopScan()
+            }
         }
 
         binding.btnSendWifiData.setOnClickListener {
             val ssid = binding.editTextSsid.text.toString()
             val password = binding.editTextPassword.text.toString()
             if (ssid.isNotBlank()) {
-                sendWifiData(ssid, password)
+                val data = "{\"ssid\": \"$ssid\", \"pass\": \"$password\"}"
+                sendWifiData(data)
             } else {
-                Toast.makeText(this, "Заполните SSID", Toast.LENGTH_SHORT).show()
+                showToast("Заполните SSID")
             }
         }
     }
 
-    private fun requestPermissions() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
-                    1
-                )
+    private fun requestPermissionsIfNeeded() {
+        val permissionsToRequest = mutableListOf<String>()
+
+        // Проверка для API 31 и выше
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.BLUETOOTH_CONNECT)
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.BLUETOOTH_SCAN)
             }
         }
-    }
-
-    private fun scanBluetoothDevices() {
-        val bluetoothAdapter = bluetoothManager.adapter
-        if (!bluetoothAdapter.isEnabled) {
-            Toast.makeText(this, "Включите Bluetooth", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val pairedDevices = bluetoothAdapter.bondedDevices
-        if (pairedDevices.isNotEmpty()) {
-            val deviceNames = pairedDevices.map { it.name ?: "Неизвестное устройство" }
-            val deviceArray = pairedDevices.toTypedArray()
-
-            val builder = android.app.AlertDialog.Builder(this)
-            builder.setTitle("Выберите устройство Bluetooth")
-            builder.setItems(deviceNames.toTypedArray()) { _, which ->
-                selectedDevice = deviceArray[which]
-                binding.deviceChosen.text = "Выбрано устройство: ${selectedDevice?.name}";
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
             }
-            builder.show()
+        }
+        if (permissionsToRequest.isNotEmpty()) {
+            requestPermissionsLauncher.launch(permissionsToRequest.toTypedArray())
         } else {
-            Toast.makeText(this, "Связанных устройств не найдено", Toast.LENGTH_SHORT).show()
+            initializeBluetooth()
         }
     }
 
-    private fun sendWifiData(ssid: String, password: String) {
-        if (selectedDevice == null) {
-            Toast.makeText(this, "Сначала выберите устройство Bluetooth", Toast.LENGTH_SHORT).show()
+    private fun initializeBluetooth() {
+        val bluetoothAdapter = bluetoothManager.adapter
+        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled) {
+            showToast("Включите Bluetooth для отправки данных")
+            return
+        }
+        bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun startScan() {
+        showToast("Начинаем поиск BLE-устройств...")
+        bleDevices.clear()
+        val scanFilters = listOf<ScanFilter>()
+        val scanSettings = ScanSettings.Builder()
+            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .build()
+        bluetoothLeScanner.startScan(scanFilters, scanSettings, scanCallback)
+        scanning = true
+
+        scanHandler.postDelayed({
+            stopScan()
+        }, 5_000)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun stopScan() {
+        if (scanning) {
+            bluetoothLeScanner.stopScan(scanCallback)
+            showToast("Сканирование завершено")
+            scanning = false
+            showDeviceSelectionDialog()
+        }
+    }
+
+    private val scanCallback = object : ScanCallback() {
+        @SuppressLint("MissingPermission")
+        override fun onScanResult(callbackType: Int, result: ScanResult) {
+            val device = result.device
+            if (device.name != null && !bleDevices.contains(device)) {
+                bleDevices.add(device)
+            }
+        }
+
+        @SuppressLint("MissingPermission")
+        override fun onBatchScanResults(results: List<ScanResult>) {
+            for (result in results) {
+                val device = result.device
+                if (device.name != null && !bleDevices.contains(device)) {
+                    bleDevices.add(device)
+                }
+            }
+        }
+
+        override fun onScanFailed(errorCode: Int) {
+            showToast("Ошибка сканирования BLE: $errorCode")
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun showDeviceSelectionDialog() {
+        if (bleDevices.isEmpty()) {
+            showToast("BLE-устройства не найдены")
             return
         }
 
-        try {
-            bluetoothSocket = selectedDevice?.createRfcommSocketToServiceRecord(uuid)
-            bluetoothSocket?.connect()
+        val deviceNames = bleDevices.map { it.name ?: "Неизвестное устройство" }
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Выберите устройство BLE")
+        builder.setItems(deviceNames.toTypedArray()) { _, which ->
+            selectedDevice = bleDevices[which]
+            binding.deviceChosen.text = "Выбрано устройство: ${selectedDevice?.name}"
+            connectToDevice()
+        }
+        builder.show()
+    }
 
-            val outputStream = bluetoothSocket?.outputStream
-            if (outputStream != null) {
-                val data = if (password.isNotBlank()) {
-                    "SSID:$ssid;PASSWORD:$password"
-                } else {
-                    "SSID:$ssid;PASSWORD:"
+    @SuppressLint("MissingPermission")
+    private fun connectToDevice() {
+        bluetoothGatt = selectedDevice?.connectGatt(this, false, gattCallback, TRANSPORT_LE)
+    }
+
+    private val gattCallback = object : BluetoothGattCallback() {
+        @SuppressLint("MissingPermission")
+        override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
+            if (status == GATT_SUCCESS) {
+                if (newState == BluetoothProfile.STATE_CONNECTED) {
+                    gatt.discoverServices()
+                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                    gatt.close()
                 }
-                outputStream.write(data.toByteArray())
-                Toast.makeText(this, "Данные Wi-Fi успешно отправлены", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this, "Не удалось получить поток вывода", Toast.LENGTH_SHORT).show()
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Toast.makeText(this, "Ошибка отправки данных: ${e.message}", Toast.LENGTH_SHORT).show()
-        } finally {
-            try {
-                bluetoothSocket?.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
+                gatt.close()
             }
         }
+    }
+
+    //Использую Deprecated методы т.к. для нового нужен более свежий min API
+    @SuppressLint("MissingPermission")
+    private fun sendWifiData(data: String) {
+        val service = bluetoothGatt?.getService(serviceUUID)
+        if (service == null) {
+            showToast("Сервис BLE не найден")
+            return
+        }
+        val characteristic = service.getCharacteristic(characteristicUUID)
+
+        if (characteristic != null) {
+            val dataBytes = data.toByteArray()
+            characteristic.setValue(dataBytes)
+            val success = bluetoothGatt?.writeCharacteristic(characteristic) ?: false
+            if (success) {
+                showToast("Данные успешно отправлены")
+            } else {
+                showToast("Ошибка при отправке данных")
+            }
+        } else {
+            showToast("Характеристика не найдена")
+        }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onDestroy() {
+        super.onDestroy()
+        bluetoothGatt?.close()
+        bluetoothGatt = null
     }
 }
