@@ -16,8 +16,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val apiKey = preferences.getString("api_key", "No API Key Set")
-        binding.apiKeyTextView.text = apiKey
+        val apiKey = preferences.getString("api_key", "")
+        binding.apiKeyValue.text = apiKey
 
         binding.changeApiKeyButton.setOnClickListener {
             val intent = Intent(this, ChangeApiKeyActivity::class.java)
@@ -33,6 +33,11 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, SendWifiDataActivity::class.java)
             startActivity(intent)
         }
+
+        binding.sendReferencesByBluetoothButton.setOnClickListener {
+            val intent = Intent(this, SetReferencesByBluetoothActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onResume() {
@@ -42,8 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateApiKey() {
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val apiKey = preferences.getString("api_key", "No API Key Set")
-        binding.apiKeyTextView.text = apiKey;
+        val apiKey = preferences.getString("api_key", "")
+        binding.apiKeyValue.text = apiKey
     }
-
 }

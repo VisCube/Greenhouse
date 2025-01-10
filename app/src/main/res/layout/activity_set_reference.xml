@@ -7,147 +7,251 @@
     tools:context=".SetReferenceActivity">
 
     <TextView
+        android:id="@id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/setReferencesOnServerTitle"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
         android:id="@+id/apiKeyTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="156dp"
         android:layout_marginTop="4dp"
-        android:padding="16dp"
+        android:layout_marginEnd="4dp"
+        android:paddingVertical="16dp"
         android:text="@string/showApiKey"
         android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/apiKeyValue"
+        app:layout_constraintTop_toBottomOf="@id/title" />
+
+    <TextView
+        android:id="@+id/apiKeyValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:paddingVertical="16dp"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toRightOf="@id/apiKeyTextView"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title" />
+
 
     <Button
         android:id="@+id/changeApiKeyButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="16dp"
         android:text="@string/changeApiKey"
-        app:layout_constraintTop_toBottomOf="@id/apiKeyTextView"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:padding="16dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/apiKeyTextView" />
 
     <TextView
         android:id="@+id/currentLightTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:paddingVertical="8dp"
         android:text="@string/currentLightLabel"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/changeApiKeyButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:padding="8dp" />
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/currentLightValue"
+        app:layout_constraintTop_toBottomOf="@id/changeApiKeyButton" />
+
+    <TextView
+        android:id="@+id/currentLightValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingVertical="8dp"
+        android:text="@string/NoData"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toRightOf="@id/currentLightTextView"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/changeApiKeyButton" />
 
     <TextView
         android:id="@+id/currentHumidityTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:paddingVertical="8dp"
         android:text="@string/currentHumidityLabel"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/currentLightTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:padding="8dp" />
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/currentHumidityValue"
+        app:layout_constraintTop_toBottomOf="@id/currentLightTextView" />
+
+    <TextView
+        android:id="@+id/currentHumidityValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingVertical="8dp"
+        android:text="@string/NoData"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toRightOf="@id/currentHumidityTextView"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/currentLightTextView" />
 
     <TextView
         android:id="@+id/currentTemperatureTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:paddingVertical="8dp"
         android:text="@string/currentTemperatureLabel"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/currentHumidityTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:padding="8dp" />
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/currentTemperatureValue"
+        app:layout_constraintTop_toBottomOf="@id/currentHumidityTextView" />
 
     <TextView
-        android:id="@+id/lightLabel"
+        android:id="@+id/currentTemperatureValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingVertical="8dp"
+        android:text="@string/NoData"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toRightOf="@id/currentTemperatureTextView"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/currentHumidityTextView" />
+
+    <TextView
+        android:id="@+id/lightReferenceLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="4dp"
         android:text="@string/LightReferenceLabel"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/currentTemperatureTextView"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/lightReferenceValue"
+        app:layout_constraintTop_toBottomOf="@id/currentTemperatureTextView" />
+
+    <TextView
+        android:id="@+id/lightReferenceValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"/>
+        android:text="@string/NoData"
+        app:layout_constraintLeft_toRightOf="@id/lightReferenceLabel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/currentTemperatureTextView" />
 
     <com.google.android.material.slider.Slider
-        android:id="@+id/lightSlider"
+        android:id="@+id/lightReferenceSlider"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:stepSize="1"
-        android:value="50"
+        android:value="40"
         android:valueFrom="0"
-        android:valueTo="100"
+        android:valueTo="80"
+        app:labelBehavior="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lightLabel"
-        app:labelBehavior="gone" />
+        app:layout_constraintTop_toBottomOf="@id/lightReferenceLabel" />
 
     <TextView
-        android:id="@+id/humidityLabel"
+        android:id="@+id/humidityReferenceLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="4dp"
         android:text="@string/humidityReferenceLabel"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lightSlider"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"/>
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/humidityReferenceValue"
+        app:layout_constraintTop_toBottomOf="@id/lightReferenceSlider" />
 
-    <com.google.android.material.slider.Slider
-        android:id="@+id/humiditySlider"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:stepSize="1"
-        android:value="50"
-        android:valueFrom="0"
-        android:valueTo="100"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/humidityLabel"
-        app:labelBehavior="gone" />
 
     <TextView
-        android:id="@+id/temperatureLabel"
+        android:id="@+id/humidityReferenceValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/temperatureReferenceLabel"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/humiditySlider"
         android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"/>
+        android:text="@string/NoData"
+        app:layout_constraintLeft_toRightOf="@id/humidityReferenceLabel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lightReferenceSlider" />
+
 
     <com.google.android.material.slider.Slider
-        android:id="@+id/temperatureSlider"
+        android:id="@+id/humidityReferenceSlider"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:stepSize="1"
-        android:value="50"
+        android:value="40"
         android:valueFrom="0"
-        android:valueTo="100"
+        android:valueTo="80"
+        app:labelBehavior="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/temperatureLabel"
-        app:labelBehavior="gone" />
+        app:layout_constraintTop_toBottomOf="@id/humidityReferenceLabel" />
+
+    <TextView
+        android:id="@+id/temperatureReferenceLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="4dp"
+        android:text="@string/temperatureReferenceLabel"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/temperatureReferenceValue"
+        app:layout_constraintTop_toBottomOf="@id/humidityReferenceSlider" />
+
+    <TextView
+        android:id="@+id/temperatureReferenceValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/NoData"
+        app:layout_constraintLeft_toRightOf="@id/temperatureReferenceLabel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/humidityReferenceSlider" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/temperatureReferenceSlider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:stepSize="1"
+        android:value="25"
+        android:valueFrom="10"
+        android:valueTo="40"
+        app:labelBehavior="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/temperatureReferenceLabel" />
 
     <Button
         android:id="@+id/setReferences"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:text="@string/sendReferencesValues"
-        app:layout_constraintTop_toBottomOf="@id/temperatureSlider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="32dp" />
+        app:layout_constraintTop_toBottomOf="@id/temperatureReferenceSlider" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,6 +7,18 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:text="Ввод API-ключа"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <EditText
         android:id="@+id/etApiKey"
         android:layout_width="match_parent"
@@ -15,7 +27,9 @@
         android:hint="@string/showApiKey"
         android:inputType="text"
         android:minHeight="48dp"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        />
 
     <Button
         android:id="@+id/btnSave"

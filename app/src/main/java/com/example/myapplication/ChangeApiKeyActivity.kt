@@ -27,11 +27,11 @@ class ChangeApiKeyActivity : AppCompatActivity() {
             val newApiKey = binding.etApiKey.text.toString().trim()
 
             if (newApiKey.isEmpty()) {
-                Toast.makeText(this, "Please enter a valid API key", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Введите API ключ", Toast.LENGTH_SHORT).show()
             } else {
                 sharedPreferences.edit().putString("api_key", newApiKey).apply()
 
-                Toast.makeText(this, "API key updated successfully", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "API ключ успешно обовлен", Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
