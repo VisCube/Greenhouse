@@ -29,10 +29,6 @@ async def get_from_cache(user_id: int) -> Greenhouse:
         return greenhouse
 
 
-async def remove_from_cache(user_id: int):
-    chosen_sensors.update({user_id: None})
-
-
 # Чтобы запомнить, эталон какого датчика меняет юзер
 async def choose_sensor(user_id: int, sensor: Sensor):
     chosen_sensors.update({user_id: sensor})
