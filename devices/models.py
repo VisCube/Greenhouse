@@ -9,7 +9,7 @@ class Sensor(models.Model):
     TYPE_CHOICES = (
         ("light", "light"),
         ("temperature", "temperature"),
-        ("moist", "moist"),
+        ("moisture", "moisture"),
     )
 
     device = models.ForeignKey(
@@ -25,8 +25,8 @@ class Sensor(models.Model):
 class Actuator(models.Model):
     TYPE_CHOICES = (
         ("lamp", "lamp"),
-        ("heater", "heater"),
         ("cooler", "cooler"),
+        ("heater", "heater"),
         ("shower", "shower"),
     )
 
