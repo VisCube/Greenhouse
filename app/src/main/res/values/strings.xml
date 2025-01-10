@@ -3,14 +3,14 @@
     <!-- Strings used for fragments for navigation -->
 
     <string name="wi_fi_bluetooth">Отправить данные о Wi-Fi сети через Bluetooth</string>
-    <string name="temperatureReferenceLabel">Эталон влажности:</string>
-    <string name="humidityReferenceLabel">Эталон влажности:</string>
-    <string name="LightReferenceLabel">Эталон освещенности:</string>
+    <string name="temperatureReferenceLabel">Эталон температуры: </string>
+    <string name="humidityReferenceLabel">Эталон влажности: </string>
+    <string name="LightReferenceLabel">Эталон освещенности: </string>
     <string name="currentTemperatureLabel">Температура: </string>
     <string name="currentHumidityLabel">Влажность: </string>
     <string name="currentLightLabel">Освещенность: </string>
     <string name="changeApiKey">Изменить API-ключ</string>
-    <string name="setReferenceButton">Просмотр показателей</string>
+    <string name="setReferenceButton">Просмотр и отправка показателей</string>
     <string name="showApiKey">API ключ:</string>
     <string name="wiFiPassword">Wi-Fi пароль</string>
     <string name="wiFiSsid">Wi-Fi SSID</string>
@@ -19,4 +19,9 @@
     <string name="saveApiKey">Сохранить API-ключ</string>
     <string name="sendReferencesValues">Отправить эталонные значения</string>
     <string name="showChosenDevice">Выбранное устройство: </string>
+    <string name="sendReferencesByBluetooth">Отправить эталонные значения по Bluetooth</string>
+    <string name="setReferencesByBluetoothTittle">Отправка эталонных значений по Bluetooth</string>
+    <string name="NoData">Нет данных</string>
+    <string name="sendWiFiDataHeader">Отправка данных Wi-Fi сети</string>
+    <string name="setReferencesOnServerTitle">Чтение и отправка показателей на сервер</string>
 </resources>

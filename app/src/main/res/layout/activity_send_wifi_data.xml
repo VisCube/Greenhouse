@@ -1,10 +1,21 @@
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/sendWiFiDataHeader"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/editTextSsid"
@@ -16,7 +27,7 @@
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/title" />
 
     <EditText
         android:id="@+id/editTextPassword"
@@ -35,44 +46,45 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/scanBluetoothDevices"
-        app:layout_constraintTop_toBottomOf="@id/editTextPassword"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editTextPassword"
         app:layout_constraintVertical_bias="0.2" />
 
-<!--    <ListView-->
-<!--        android:id="@+id/listViewDevices"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:divider="@android:color/darker_gray"-->
-<!--        android:dividerHeight="1dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="1.0"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/btnScanDevices"-->
-<!--        app:layout_constraintVertical_bias="0.0">-->
-<!--    </ListView>-->
-
     <TextView
-        android:id="@+id/deviceChosen"
+        android:id="@+id/deviceChosenTextLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:layout_marginEnd="4dp"
+        android:paddingVertical="16dp"
         android:text="@string/showChosenDevice"
-        app:layout_constraintTop_toBottomOf="@id/btnScanDevices"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/deviceChosenValue"
+        app:layout_constraintTop_toBottomOf="@id/btnScanDevices" />
+
+    <TextView
+        android:id="@+id/deviceChosenValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingVertical="16dp"
+
+        android:text=""
+        android:textSize="16sp"
+        app:layout_constraintLeft_toRightOf="@id/deviceChosenTextLabel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnScanDevices" />
+
 
     <Button
         android:id="@+id/btnSendWifiData"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/sendWiFiData"
-        app:layout_constraintTop_toBottomOf="@id/deviceChosen"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/deviceChosenTextLabel"
         tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
