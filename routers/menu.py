@@ -6,7 +6,8 @@ from aiogram.types import Message
 from config import config
 from keyboards import get_menu_keyboard
 from routers.reference import command_reference
-from states import MenuStates, get_from_cache, remove_from_cache
+from server import get_greenhouse
+from states import MenuStates, get_from_cache, put_to_cache
 from templates import *
 
 DEVICE_ID = config.device_id.get_secret_value()  # id демонстрационной теплицы
@@ -52,7 +53,9 @@ async def command_menu(message: Message, state: FSMContext):
 @router.message(F.text == COMMAND_REFRESH)
 @router.message(F.text == BUTTON_REFRESH)
 async def command_refresh(message: Message, state: FSMContext):
-    await remove_from_cache(message.from_user.id)
+    greenhouse = get_greenhouse(DEVICE_ID)
+    if greenhouse is not None:
+        await put_to_cache(message.from_user.id, greenhouse)
     return await command_menu(message, state)
 
 
