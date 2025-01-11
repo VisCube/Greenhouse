@@ -1,4 +1,4 @@
-package com.example.myapplication.LayoutUtils
+package com.example.myapplication.layoutUtils
 
 import android.content.Context
 import android.util.AttributeSet

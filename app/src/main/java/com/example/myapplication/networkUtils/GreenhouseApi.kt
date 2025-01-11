@@ -1,4 +1,4 @@
-package com.example.myapplication.NetworkUtils
+package com.example.myapplication.networkUtils
 
 import com.example.myapplication.data.GreenhouseData
 import com.example.myapplication.data.SensorReference

@@ -1,4 +1,4 @@
-package com.example.myapplication.NetworkUtils
+package com.example.myapplication.networkUtils
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

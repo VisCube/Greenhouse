@@ -31,7 +31,7 @@ class ChangeDeviceIdActivity : AppCompatActivity() {
             } else {
                 sharedPreferences.edit().putString("device_id", newDeviceId).apply()
 
-                Toast.makeText(this, "ID успешно обовлен", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "ID успешно обновлен", Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
