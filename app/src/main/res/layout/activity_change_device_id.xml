@@ -14,17 +14,17 @@
         android:padding="16dp"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:text="Ввод API-ключа"
+        android:text="@string/EnterDeviceId"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/etApiKey"
+        android:id="@+id/editDeviceId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:autofillHints=""
-        android:hint="@string/showApiKey"
+        android:hint="@string/showDeviceId"
         android:inputType="text"
         android:minHeight="48dp"
         tools:ignore="MissingConstraints"
@@ -35,8 +35,8 @@
         android:id="@+id/btnSave"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/saveApiKey"
-        app:layout_constraintTop_toBottomOf="@id/etApiKey"
+        android:text="@string/saveDeviceId"
+        app:layout_constraintTop_toBottomOf="@id/editDeviceId"
         />
 
 

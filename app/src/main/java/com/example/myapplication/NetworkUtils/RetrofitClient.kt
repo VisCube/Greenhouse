@@ -1,10 +1,10 @@
-package com.example.myapplication
+package com.example.myapplication.NetworkUtils
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "https://my-json-server.typicode.com/Fotaxis/FakeJSON/" //TODO Тестовый адресс
+    private const val BASE_URL = "https://metallolom.pythonanywhere.com/api/"
 
     private val retrofit by lazy {
         Retrofit.Builder()

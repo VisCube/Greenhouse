@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -16,11 +16,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val apiKey = preferences.getString("api_key", "")
-        binding.apiKeyValue.text = apiKey
+        val deviceId = preferences.getString("device_id", "")
+        binding.deviceIdValue.text = deviceId
 
-        binding.changeApiKeyButton.setOnClickListener {
-            val intent = Intent(this, ChangeApiKeyActivity::class.java)
+        binding.changeDeviceIdButton.setOnClickListener {
+            val intent = Intent(this, ChangeDeviceIdActivity::class.java)
             startActivity(intent)
         }
 
@@ -42,12 +42,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        updateApiKey()
+        updateDeviceId()
     }
 
-    private fun updateApiKey() {
+    private fun updateDeviceId() {
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val apiKey = preferences.getString("api_key", "")
-        binding.apiKeyValue.text = apiKey
+        val deviceId = preferences.getString("device_id", "")
+        binding.deviceIdValue.text = deviceId
     }
 }

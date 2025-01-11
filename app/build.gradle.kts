@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.squareup.retrofit)
     implementation(libs.squareup.converter.gson)
     implementation(libs.androidx.preference)
+    implementation(libs.androidx.swiperefreshlayout)
 
 
     testImplementation(libs.junit)

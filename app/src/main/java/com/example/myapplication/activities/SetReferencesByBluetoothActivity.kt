@@ -1,8 +1,8 @@
-package com.example.myapplication
+package com.example.myapplication.activities
 
-import BaseBleActivity
 import android.annotation.SuppressLint
 import android.os.Bundle
+import com.example.myapplication.R
 import com.example.myapplication.databinding.ActivitySetReferencesByBluetoothBinding
 import java.util.UUID
 

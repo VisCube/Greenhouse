@@ -20,7 +20,7 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MyApplication">
             <intent-filter>
@@ -31,19 +31,19 @@
         </activity>
 
         <activity
-            android:name=".SetReferenceActivity"
+            android:name=".activities.SetReferenceActivity"
             android:label="Set Reference Values"
             android:exported="true"/>
 
-        <activity android:name=".SendWifiDataActivity"
+        <activity android:name=".activities.SendWifiDataActivity"
             android:label="Send Wi-Fi Data"
             android:exported="true"/>
 
-        <activity android:name=".ChangeApiKeyActivity"
-            android:label="Change API key"
+        <activity android:name=".activities.ChangeDeviceIdActivity"
+            android:label="Change device id"
             android:exported="true"/>
 
-        <activity android:name=".SetReferencesByBluetoothActivity"
+        <activity android:name=".activities.SetReferencesByBluetoothActivity"
             android:label="Set references by bluetooth"
             android:exported="true"/>
 

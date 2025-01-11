@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.data
 
 data class GreenhouseData(
     val sensors: List<Sensor>

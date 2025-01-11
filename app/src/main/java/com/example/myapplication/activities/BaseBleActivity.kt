@@ -1,3 +1,5 @@
+package com.example.myapplication.activities
+
 import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice

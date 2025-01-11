@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SetReferencesByBluetoothActivity">
+    tools:context=".activities.SetReferencesByBluetoothActivity">
 
     <TextView
         android:id="@+id/title"
@@ -70,7 +70,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="40%"
+        android:text="@string/defaultLightReference"
         app:layout_constraintLeft_toRightOf="@id/lightReferenceLabel"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnScanDevices" />
@@ -109,7 +109,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="40%"
+        android:text="@string/defaultHumidityReference"
         app:layout_constraintLeft_toRightOf="@id/humidityReferenceLabel"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lightReferenceSlider" />
@@ -148,7 +148,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="25°C"
+        android:text="@string/defaultTemperatureReference"
         app:layout_constraintLeft_toRightOf="@id/temperatureReferenceLabel"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/humidityReferenceSlider" />
@@ -177,6 +177,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/temperatureReferenceSlider" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

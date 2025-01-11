@@ -4,42 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".activities.MainActivity">
 
     <TextView
-        android:id="@+id/apiKeyTextView"
+        android:id="@+id/deviceIdTextVIew"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
         android:paddingVertical="16dp"
-        android:text="@string/showApiKey"
+        android:text="@string/showDeviceId"
         android:textSize="16sp"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/apiKeyValue"
+        app:layout_constraintRight_toLeftOf="@+id/deviceIdValue"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/apiKeyValue"
+        android:id="@+id/deviceIdValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:paddingVertical="16dp"
         android:textSize="16sp"
-        app:layout_constraintLeft_toRightOf="@id/apiKeyTextView"
+        app:layout_constraintLeft_toRightOf="@id/deviceIdTextVIew"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/changeApiKeyButton"
+        android:id="@+id/changeDeviceIdButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:text="@string/changeApiKey"
+        android:text="@string/changeDeviceId"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/apiKeyTextView" />
+        app:layout_constraintTop_toBottomOf="@id/deviceIdTextVIew" />
 
     <Button
         android:id="@+id/setReferencesButton"
@@ -49,7 +49,7 @@
         android:text="@string/setReferenceButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/changeApiKeyButton" />
+        app:layout_constraintTop_toBottomOf="@id/changeDeviceIdButton" />
 
     <Button
         android:id="@+id/sendWifiDataButton"

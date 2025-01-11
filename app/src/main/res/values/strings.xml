@@ -9,14 +9,14 @@
     <string name="currentTemperatureLabel">Температура: </string>
     <string name="currentHumidityLabel">Влажность: </string>
     <string name="currentLightLabel">Освещенность: </string>
-    <string name="changeApiKey">Изменить API-ключ</string>
+    <string name="changeDeviceId">Изменить ID теплицы</string>
     <string name="setReferenceButton">Просмотр и отправка показателей</string>
-    <string name="showApiKey">API ключ:</string>
+    <string name="showDeviceId">ID теплицы:</string>
     <string name="wiFiPassword">Wi-Fi пароль</string>
     <string name="wiFiSsid">Wi-Fi SSID</string>
     <string name="scanBluetoothDevices">Сканирование Bluetooth устройств</string>
     <string name="sendWiFiData">Отправить данные Wi-Fi</string>
-    <string name="saveApiKey">Сохранить API-ключ</string>
+    <string name="saveDeviceId">Сохранить ID</string>
     <string name="sendReferencesValues">Отправить эталонные значения</string>
     <string name="showChosenDevice">Выбранное устройство: </string>
     <string name="sendReferencesByBluetooth">Отправить эталонные значения по Bluetooth</string>
@@ -24,4 +24,8 @@
     <string name="NoData">Нет данных</string>
     <string name="sendWiFiDataHeader">Отправка данных Wi-Fi сети</string>
     <string name="setReferencesOnServerTitle">Чтение и отправка показателей на сервер</string>
+    <string name="EnterDeviceId">Ввод ID теплицы</string>
+    <string name="defaultLightReference">40%</string>
+    <string name="defaultHumidityReference">40%</string>
+    <string name="defaultTemperatureReference">25°C</string>
 </resources>

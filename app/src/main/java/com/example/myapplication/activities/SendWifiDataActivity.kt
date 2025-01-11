@@ -1,7 +1,7 @@
-package com.example.myapplication
+package com.example.myapplication.activities
 
-import BaseBleActivity
 import android.os.Bundle
+import com.example.myapplication.R
 import com.example.myapplication.databinding.ActivitySendWifiDataBinding
 import java.util.UUID
 
