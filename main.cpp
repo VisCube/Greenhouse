@@ -230,7 +230,61 @@ void parseMessage(JSONVar message) {
         wifiCon.pass = message["pass"];
         wifiStorage.write(wifiCon);
     }
-    // TODO
+    if (command == "getData") {
+        central = BLE.central();
+        if (central) {
+            while (central.connected()) {
+                JSONVar fullData;
+                JSONVar sensorData;
+                JSONVar actuatorData;
+
+                JSONVar lightData;
+                lightData["id"] = light.id;
+                lightData["type"] = "light";
+                lightData["reading"] = light.reading;
+                lightData["reference"] = light.reference;
+                sensorData[0] = lightData;
+                JSONVar temperatureData;
+                temperatureData["id"] = temperature.id;
+                temperatureData["type"] = "temperature";
+                temperatureData["reading"] = temperature.reading;
+                temperatureData["reference"] = temperature.reference;
+                sensorData[1] = temperatureData;
+                JSONVar moistureData;
+                moistureData["id"] = moisture.id;
+                moistureData["type"] = "moisture";
+                moistureData["reading"] = moisture.reading;
+                moistureData["reference"] = moisture.reference;
+                sensorData[2] = moistureData;
+
+                JSONVar lampData;
+                lampData["id"] = lamp.id;
+                lampData["type"] = "lamp";
+                lampData["status"] = lamp.status;
+                actuatorData[0] = lampData;
+                JSONVar coolerData;
+                coolerData["id"] = cooler.id;
+                coolerData["type"] = "cooler";
+                coolerData["status"] = cooler.status;
+                actuatorData[0] = coolerData;
+                JSONVar heaterData;
+                heaterData["id"] = heater.id;
+                heaterData["type"] = "heater";
+                heaterData["status"] = heater.status;
+                actuatorData[0] = heaterData;
+                JSONVar showerData;
+                showerData["id"] = shower.id;
+                showerData["type"] = "shower";
+                showerData["status"] = shower.status;
+                actuatorData[0] = showerData;
+
+                fullData["id"] = deviceID;
+                fullData["sensors"] = sensorData;
+                fullData["actuators"] = actuatorData;
+                switchCharacteristic.writeValue(JSON.stringify(fullData));
+            }
+        }
+    }
 }
 
 /* Включает Bluetooth */
@@ -379,6 +433,19 @@ void pollServer() {
     if (newMessages) messageStorage.write(messageCounter);
 }
 
+/* Процедура обмена данных с сервером */
+void iterServer() {
+    if (checkWiFi()) {
+        displayData("Sending data...", "");
+        checkRegistry();
+        patchAll();
+        displayData("", "Data sent.");
+        displayData("Receiving data...", "");
+        pollServer();
+        displayData("", "Data received.");
+    }
+}
+
 void setup() {
     Serial.begin(9600);
     while (!Serial) {
@@ -412,21 +479,22 @@ void setup() {
 }
 
 void loop() {
-    readSensors();
-    checkReferences();
-    useActuators();
-
-    pollBluetooth();
-    if (checkWiFi()) {
-        displayData("Sending data...", "");
-        checkRegistry();
-        patchAll();
-        displayData("", "Data sent.");
-        displayData("Receiving data...", "");
-        pollServer();
-        displayData("", "Data received.");
+    if (millis() - lastReadings > INTERVAL_READINGS) {
+        readSensors();
+        checkReferences();
+        useActuators();
+        lastReadings = millis();
     }
-
-    displayAll();
-    delay(10000);
+    if (millis() - lastBluetooth > INTERVAL_BLUETOOTH) {
+        pollBluetooth();
+        lastBluetooth = millis();
+    }
+    if (millis() - lastServer > INTERVAL_SERVER) {
+        iterServer();
+        lastServer = millis();
+    }
+    if (millis() - lastDisplay > INTERVAL_DISPLAY) {
+        displayAll();
+        lastDisplay = millis();
+    }
 }
