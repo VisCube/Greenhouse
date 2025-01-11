@@ -39,23 +39,15 @@
 
 /* Сенсоры */
 struct Sensor {
-    int pin; // Пин для чтения
     int reading{}; // Текущее значение
     int reference{}; // Эталонное значение
     int id{}; // Идентификатор на сервере
-
-    explicit Sensor(const int pin): pin(pin) {
-    }
 };
 
 /* Актуаторы */
 struct Actuator {
-    int pin; // Управляющий пин
     bool status{}; // Текущее состояние (вкл/выкл)
     int id{}; // Идентификатор на сервере
-
-    explicit Actuator(const int pin) : pin(pin) {
-    }
 };
 
 /* Данные для подключения к WiFi */
@@ -66,9 +58,9 @@ struct WiFiCon {
 
 
 // Датчик света, датчик температуры, датчик влажности почвы
-Sensor light(PIN_LIGHT), temperature(PIN_TEMPERATURE), moisture(PIN_MOISTURE);
+Sensor light, temperature, moisture;
 // Лампа, кулер, нагреватель, помпа для полива
-Actuator lamp(PIN_LAMP), cooler(PIN_COOLER), heater(PIN_HEATER), shower(PIN_SHOWER);
+Actuator lamp, cooler, heater, shower;
 
 /* Объекты для работы с датчиком температуры */
 OneWire oneWire(PIN_TEMPERATURE);
@@ -113,9 +105,9 @@ unsigned long lastDisplay;
 void readSensors() {
     temperatureSensor.requestTemperatures();
 
-    light.reading = !digitalRead(light.pin) * 37 + 42;
+    light.reading = !digitalRead(PIN_LIGHT) * 37 + 42;
     temperature.reading = static_cast<int>(temperatureSensor.getTempCByIndex(0));
-    moisture.reading = map(1023 - analogRead(moisture.pin), 0, 1023, 0, 100);
+    moisture.reading = map(1023 - analogRead(PIN_MOISTURE), 0, 1023, 0, 100);
 }
 
 /* Проверяет адекватность эталонных показаний */
@@ -159,10 +151,10 @@ void useActuators() {
     heater.status = temperature.reading > temperature.reference + 5;
     shower.status = moisture.reading < moisture.reference - 10;
 
-    digitalWrite(lamp.pin, lamp.status);
-    digitalWrite(cooler.pin, cooler.status);
-    digitalWrite(heater.pin, heater.status);
-    digitalWrite(shower.pin, shower.status);
+    digitalWrite(PIN_LAMP, lamp.status);
+    digitalWrite(PIN_COOLER, cooler.status);
+    digitalWrite(PIN_HEATER, heater.status);
+    digitalWrite(PIN_SHOWER, shower.status);
 }
 
 /* Выводит две строки на дисплей */
@@ -206,23 +198,17 @@ void parseMessage(JSONVar message) {
     if (command == "setReference") {
         const String sensor = message["sensor"];
         const int value = message["value"];
-        switch (sensor) {
-            case "light": {
-                light.reference = value;
-                lightStorage.write(light);
-                break;
-            }
-            case "temperature": {
-                temperature.reference = value;
-                temperatureStorage.write(temperature);
-                break;
-            }
-            case "moisture": {
-                moisture.reference = value;
-                moistureStorage.write(moisture);
-                break;
-            }
-            default: ;
+        if (sensor == "light") {
+            light.reference = value;
+            lightStorage.write(light);
+        }
+        if (sensor == "temperature") {
+            temperature.reference = value;
+            temperatureStorage.write(temperature);
+        }
+        if (sensor == "moisture") {
+            moisture.reference = value;
+            moistureStorage.write(moisture);
         }
     }
     if (command == "setWiFi") {
@@ -266,23 +252,24 @@ void parseMessage(JSONVar message) {
                 coolerData["id"] = cooler.id;
                 coolerData["type"] = "cooler";
                 coolerData["status"] = cooler.status;
-                actuatorData[0] = coolerData;
+                actuatorData[1] = coolerData;
                 JSONVar heaterData;
                 heaterData["id"] = heater.id;
                 heaterData["type"] = "heater";
                 heaterData["status"] = heater.status;
-                actuatorData[0] = heaterData;
+                actuatorData[2] = heaterData;
                 JSONVar showerData;
                 showerData["id"] = shower.id;
                 showerData["type"] = "shower";
                 showerData["status"] = shower.status;
-                actuatorData[0] = showerData;
+                actuatorData[3] = showerData;
 
                 fullData["id"] = deviceID;
                 fullData["sensors"] = sensorData;
                 fullData["actuators"] = actuatorData;
                 switchCharacteristic.writeValue(JSON.stringify(fullData));
             }
+            switchCharacteristic.writeValue(JSON.stringify(0));
         }
     }
 }
@@ -447,10 +434,6 @@ void iterServer() {
 }
 
 void setup() {
-    Serial.begin(9600);
-    while (!Serial) {
-    }
-
     pinMode(PIN_LIGHT, INPUT);
     pinMode(PIN_TEMPERATURE, INPUT);
     pinMode(PIN_MOISTURE, INPUT);
