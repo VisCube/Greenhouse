@@ -21,34 +21,32 @@ class GetDataByBLEActivity : BaseBleActivity() {
         setContentView(binding.root)
 
         binding.sendWifiDataButton.setOnClickListener() {
-            resetConnection()
             val intent = Intent(this, SendWifiDataActivity::class.java)
             startActivity(intent)
         }
 
-        binding.refreshButton.setOnClickListener() {
-            if ( selectedDevice != null) {
-                sendData("""{"command": "getData"}""", awaitResponse = true)
+        binding.refreshButton.setOnClickListener {
+            if (isDeviceReady) {
+                sendData("""{"command": "getData"}""", requiresResponse = true)
             } else {
-                showToast("Выберите устройство BLE")
+                showToast("Устройство ещё не подключено")
             }
         }
 
         binding.sendNewRefButton.setOnClickListener() {
-            resetConnection()
             val intent = Intent(this, SetReferencesByBluetoothActivity::class.java)
             startActivity(intent)
         }
 
 
         binding.changeBLEDevice.setOnClickListener() {
-            deleteDevice()
             if (!scanning) {
+                deleteDevice()
                 startScan()
-            }
-            else {
+            } else {
                 stopScan()
             }
+            binding.refreshButton.performClick()
         }
     }
 
@@ -56,11 +54,6 @@ class GetDataByBLEActivity : BaseBleActivity() {
         super.onResume()
         reconnectToDevice()
         Thread.sleep(160)
-        if ( selectedDevice != null) {
-            sendData("""{"command": "getData"}""", awaitResponse = true)
-        } else {
-            showToast("Выберите устройство BLE")
-        }
     }
 
 
@@ -82,16 +75,18 @@ class GetDataByBLEActivity : BaseBleActivity() {
             val heater = actuators.getJSONObject(2)
             val shower = actuators.getJSONObject(3)
 
-            val lightText = "${lightSensor.getString("reading")}/${lightSensor.getString("reference")}"
-            val tempText =  "${tempSensor.getString("reading")}/${tempSensor.getString("reference")}"
-            val moistureText = "${moistureSensor.getString("reading")}/${moistureSensor.getString("reference")}"
+            val lightText =
+                "${lightSensor.getString("reading")}/${lightSensor.getString("reference")}"
+            val tempText = "${tempSensor.getString("reading")}/${tempSensor.getString("reference")}"
+            val moistureText =
+                "${moistureSensor.getString("reading")}/${moistureSensor.getString("reference")}"
             val lampStatus = if (lamp.getBoolean("status")) "🟢" else "⚪️"
             val coolerStatus = if (cooler.getBoolean("status")) "🟢" else "⚪️"
             val heaterStatus = if (heater.getBoolean("status")) "🟢" else "⚪️"
             val showerStatus = if (shower.getBoolean("status")) "🟢" else "⚪️"
 
             binding.lightValue.text = lightText
-            binding.temperatureValue.text= tempText
+            binding.temperatureValue.text = tempText
             binding.moistureValue.text = moistureText
             binding.lightActuatorState.text = lampStatus
             binding.coolingState.text = coolerStatus
@@ -102,6 +97,11 @@ class GetDataByBLEActivity : BaseBleActivity() {
                 showToast("Ошибка обработки данных ${e.message}")
             }
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onDeviceReady() {
+        sendData("""{"command": "getData"}""", requiresResponse = true)
     }
 }
 

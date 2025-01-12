@@ -32,13 +32,14 @@ abstract class BaseBleActivity : AppCompatActivity() {
     protected var bluetoothGatt: BluetoothGatt? = null
     protected val bleDevices = mutableListOf<BluetoothDevice>()
     protected var scanning = false
-    private var awaitingResponse = false
     private val scanHandler = Handler(Looper.getMainLooper())
+    private var awaitResponse = false
+    protected var isDeviceReady = false
 
     protected abstract val serviceUUID: UUID
     protected abstract val characteristicUUID: UUID
-
-    protected open fun processCharacteristicValue(value: ByteArray) {}
+    protected abstract fun processCharacteristicValue(value: ByteArray)
+    protected open fun onDeviceReady() {    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,35 +48,21 @@ abstract class BaseBleActivity : AppCompatActivity() {
     }
 
     private fun requestPermissionsIfNeeded() {
-        val permissionsToRequest = mutableListOf<String>()
+        val permissions = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> listOf(
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_SCAN
+            )
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                permissionsToRequest.add(Manifest.permission.BLUETOOTH_CONNECT)
-            }
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.BLUETOOTH_SCAN
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                permissionsToRequest.add(Manifest.permission.BLUETOOTH_SCAN)
-            }
+            else -> listOf(Manifest.permission.ACCESS_FINE_LOCATION)
         }
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
-            }
+
+        val neededPermissions = permissions.filterNot {
+            ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
         }
-        if (permissionsToRequest.isNotEmpty()) {
-            requestPermissionsLauncher.launch(permissionsToRequest.toTypedArray())
+
+        if (neededPermissions.isNotEmpty()) {
+            requestPermissionsLauncher.launch(neededPermissions.toTypedArray())
         } else {
             checkBluetooth()
         }
@@ -83,28 +70,27 @@ abstract class BaseBleActivity : AppCompatActivity() {
 
     private val requestPermissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            val deniedPermissions = permissions.filter { !it.value }.keys
-            if (deniedPermissions.isNotEmpty()) {
-                showToast("Необходимо предоставить разрешения для работы с Bluetooth и расположением.")
+            if (permissions.values.any { !it }) {
+                showToast("Необходимо предоставить разрешения для работы с Bluetooth")
             } else {
                 checkBluetooth()
             }
         }
 
-
     protected fun checkBluetooth(): Boolean {
         val bluetoothAdapter = bluetoothManager.adapter
-        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled) {
+        return if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled) {
             showToast("Включите Bluetooth")
-            return false
+            false
+        } else {
+            true
         }
-        return true
     }
 
     @SuppressLint("MissingPermission")
     protected fun startScan() {
         if (!checkBluetooth()) return
-
+        awaitResponse = false
         bluetoothLeScanner = bluetoothManager.adapter.bluetoothLeScanner
         showToast("Начинаем поиск BLE-устройств...")
         bleDevices.clear()
@@ -127,6 +113,20 @@ abstract class BaseBleActivity : AppCompatActivity() {
         }
     }
 
+    private val scanCallback = object : ScanCallback() {
+        @SuppressLint("MissingPermission")
+        override fun onScanResult(callbackType: Int, result: ScanResult) {
+            val device = result.device
+            if (device.name != null && !bleDevices.contains(device)) {
+                bleDevices.add(device)
+            }
+        }
+
+        override fun onScanFailed(errorCode: Int) {
+            showToast("Ошибка сканирования BLE: $errorCode")
+        }
+    }
+
     @SuppressLint("MissingPermission")
     protected open fun showDeviceSelectionDialog() {
         if (bleDevices.isEmpty()) {
@@ -145,18 +145,12 @@ abstract class BaseBleActivity : AppCompatActivity() {
         builder.show()
     }
 
-    private val scanCallback = object : ScanCallback() {
-        @SuppressLint("MissingPermission")
-        override fun onScanResult(callbackType: Int, result: ScanResult) {
-            val device = result.device
-            if (device.name != null && !bleDevices.contains(device)) {
-                bleDevices.add(device)
-            }
-        }
-
-        override fun onScanFailed(errorCode: Int) {
-            showToast("Ошибка сканирования BLE: $errorCode")
-        }
+    @SuppressLint("MissingPermission")
+    protected fun saveDeviceToPreferences(device: BluetoothDevice) {
+        val sharedPreferences = getSharedPreferences("BLE_PREFS", Context.MODE_PRIVATE)
+        sharedPreferences.edit()
+            .putString("SAVED_DEVICE", device.address)
+            .apply()
     }
 
     @SuppressLint("MissingPermission")
@@ -168,23 +162,20 @@ abstract class BaseBleActivity : AppCompatActivity() {
     private val gattCallback = object : BluetoothGattCallback() {
         @SuppressLint("MissingPermission")
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    gatt.discoverServices()
-                } else {
-                    gatt.close()
-                }
+            if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_CONNECTED) {
+                gatt.discoverServices()
+            } else {
+                isDeviceReady = false
+                gatt.close()
             }
         }
 
-        @SuppressLint("MissingPermission")
-        override fun onCharacteristicWrite(
-            gatt: BluetoothGatt,
-            characteristic: BluetoothGattCharacteristic,
-            status: Int
-        ) {
-            if (status == BluetoothGatt.GATT_SUCCESS && awaitingResponse) {
-                readCharacteristic()
+        override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                isDeviceReady = true
+                runOnUiThread {
+                    onDeviceReady()
+                }
             }
         }
 
@@ -196,56 +187,46 @@ abstract class BaseBleActivity : AppCompatActivity() {
             status: Int
         ) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                val value = characteristic.value
-
-                // Проверяем, нужно ли читать этот ответ
-                if (awaitingResponse) {
-                    awaitingResponse = false // Сбрасываем флаг
-                    processCharacteristicValue(value)
-                    resetConnection() // Обрываем соединение
-                }
+                processCharacteristicValue(characteristic.value)
+            } else {
+                showToast("Ошибка при чтении характеристики")
             }
-        }
-    }
-
-
-    @SuppressLint("MissingPermission")
-    private fun readCharacteristic() {
-        val service = bluetoothGatt?.getService(serviceUUID)
-        if (service == null) {
-            showToast("Сервис BLE не найден")
-            return
-        }
-        val characteristic = service.getCharacteristic(characteristicUUID)
-        if (characteristic != null) {
-            bluetoothGatt?.readCharacteristic(characteristic)
-        } else {
-            showToast("Характеристика не найдена")
+            awaitResponse = false
         }
     }
 
     @SuppressLint("MissingPermission")
-    protected fun sendData(dataToSend: String, awaitResponse: Boolean = false) {
-        val service = bluetoothGatt?.getService(serviceUUID)
-        if (service == null) {
-            showToast("Сервис BLE не найден")
+    protected fun sendData(data: String, requiresResponse: Boolean = false) {
+        if (!isDeviceReady ) {
             return
         }
-        val characteristic = service.getCharacteristic(characteristicUUID)
+        val service = bluetoothGatt?.getService(serviceUUID)
+        val characteristic = service?.getCharacteristic(characteristicUUID)
         if (characteristic != null) {
-            awaitingResponse = awaitResponse // Устанавливаем флаг ожидания ответа
-            val dataBytes = dataToSend.toByteArray()
-            characteristic.setValue(dataBytes)
+            characteristic.value = data.toByteArray()
             val success = bluetoothGatt?.writeCharacteristic(characteristic) ?: false
-            if (!success) {
-                showToast("Ошибка при отправке данных")
-                awaitingResponse = false // Сбрасываем флаг при ошибке
+            if (success) {
+                if (requiresResponse) {
+                    awaitResponse = true
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        bluetoothGatt?.readCharacteristic(characteristic)
+                    }, 500)
+                }
+            } else {
+                showToast("Ошибка при отправке команды")
             }
         } else {
             showToast("Характеристика не найдена")
         }
     }
 
+
+    @SuppressLint("MissingPermission")
+    protected fun disconnectGatt() {
+        bluetoothGatt?.disconnect()
+        bluetoothGatt?.close()
+        bluetoothGatt = null
+    }
 
     protected fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -254,8 +235,16 @@ abstract class BaseBleActivity : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     override fun onDestroy() {
         super.onDestroy()
+        disconnectGatt()
+    }
+
+    @SuppressLint("MissingPermission")
+    protected fun resetConnection() {
+        bluetoothGatt?.disconnect()
         bluetoothGatt?.close()
         bluetoothGatt = null
+        Thread.sleep(1000)
+        connectToDevice()
     }
 
     @SuppressLint("MissingPermission")
@@ -271,35 +260,12 @@ abstract class BaseBleActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("MissingPermission")
     protected fun deleteDevice() {
         val sharedPreferences = getSharedPreferences("BLE_PREFS", Context.MODE_PRIVATE)
-        sharedPreferences.edit().remove("SAVED_DEVICE").apply()
-        bluetoothGatt?.disconnect()
-        bluetoothGatt?.close()
-        bluetoothGatt = null
-        selectedDevice = null
-        Thread.sleep(100)
-    }
-
-
-    @SuppressLint("MissingPermission")
-    protected fun saveDeviceToPreferences(device: BluetoothDevice) {
-        val sharedPreferences = getSharedPreferences("BLE_PREFS", Context.MODE_PRIVATE)
         sharedPreferences.edit()
-            .putString("SAVED_DEVICE", device.address)
+            .remove("SAVED_DEVICE")
             .apply()
+        disconnectGatt()
+        selectedDevice = null;
     }
-
-    @SuppressLint("MissingPermission")
-    protected fun resetConnection() {
-        bluetoothGatt?.disconnect()
-        bluetoothGatt?.close()
-        bluetoothGatt = null
-        Thread.sleep(50)
-        connectToDevice()
-    }
-
-
 }
-

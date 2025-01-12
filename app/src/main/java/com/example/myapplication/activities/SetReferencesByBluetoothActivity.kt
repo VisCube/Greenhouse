@@ -34,25 +34,19 @@ class SetReferencesByBluetoothActivity : BaseBleActivity() {
             binding.temperatureReferenceValue.text = "${value.toInt()}°C"
         }
 
-//        binding.btnScanDevices.setOnClickListener {
-//            if (!scanning) {
-//                startScan()
-//
-//            } else {
-//                stopScan()
-//            }
-//            binding.deviceChosenValue.text = selectedDevice?.name
-//        }
-
         binding.setReferences.setOnClickListener {
             if (selectedDevice != null) {
                 sendData(getDataToSend(binding.lightReferenceSlider.value.toInt(),
                     binding.temperatureReferenceSlider.value.toInt(),
                     binding.humidityReferenceSlider.value.toInt()))
+                showToast("Значения отправлены")
             } else {
                 showToast("Сначала выберите устройство")
             }
         }
+    }
+
+    override fun processCharacteristicValue(value: ByteArray) {
     }
 
     private fun getDataToSend(lightValue: Int, tempValue: Int, moistureValue: Int): String {

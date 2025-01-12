@@ -9,6 +9,9 @@ class SendWifiDataActivity : BaseBleActivity() {
     override val serviceUUID: UUID = UUID.fromString("0000180A-0000-1000-8000-00805f9b34fb")
     override val characteristicUUID: UUID = UUID.fromString("00002A57-0000-1000-8000-00805f9b34fb")
 
+    override fun processCharacteristicValue(value: ByteArray) {
+    }
+
     private lateinit var binding: ActivitySendWifiDataBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +26,7 @@ class SendWifiDataActivity : BaseBleActivity() {
                 val password = binding.editTextPassword.text.toString()
                 if (ssid.isNotBlank()) {
                     sendData("{\"command\": \"setWiFi\", \"ssid\": \"$ssid\", \"pass\": \"$password\"}")
+                    showToast("Значения отправлены")
                 } else {
                     showToast("Заполните SSID")
                 }

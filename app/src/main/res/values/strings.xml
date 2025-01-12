@@ -14,9 +14,7 @@
     <string name="showDeviceId">ID теплицы:</string>
     <string name="wiFiPassword">Wi-Fi пароль</string>
     <string name="wiFiSsid">Wi-Fi SSID</string>
-    <string name="scanBluetoothDevices">Сканирование Bluetooth устройств</string>
-    <string name="sendWiFiData">Отправить данные Wi-Fi</string>
-    <string name="saveDeviceId">Сохранить ID</string>
+    <string name="sendWiFiData">Отправить данные Wi-Fi сети</string>
     <string name="sendReferencesValues">Отправить эталонные значения</string>
     <string name="showChosenDevice">Выбранное устройство: </string>
     <string name="sendReferencesByBluetooth">Отправить эталонные значения по Bluetooth</string>
@@ -28,6 +26,14 @@
     <string name="defaultLightReference">40%</string>
     <string name="defaultHumidityReference">40%</string>
     <string name="defaultTemperatureReference">25°C</string>
-    <string name="mainMenu">Главное Меню</string>
-    <string name="CheckData">Просмотреть данные</string>
+    <string name="chooseDevice">Выбрать устройство</string>
+    <string name="refresh">Обновить</string>
+    <string name="defaultActuatorState">⚪️</string>
+    <string name="lightIcon">☀️</string>
+    <string name="temperatureIcon">🌡</string>
+    <string name="moistureIcon">💧</string>
+    <string name="unknownValue">?</string>
+    <string name="heatIcon">🔥</string>
+    <string name="coolingIcon">️❄️</string>
+    <string name="lightActuatorIcon">💡</string>
 </resources>
