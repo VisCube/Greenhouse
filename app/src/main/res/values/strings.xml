@@ -28,4 +28,6 @@
     <string name="defaultLightReference">40%</string>
     <string name="defaultHumidityReference">40%</string>
     <string name="defaultTemperatureReference">25°C</string>
+    <string name="mainMenu">Главное Меню</string>
+    <string name="CheckData">Просмотреть данные</string>
 </resources>

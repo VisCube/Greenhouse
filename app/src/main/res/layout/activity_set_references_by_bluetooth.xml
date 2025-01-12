@@ -12,45 +12,11 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:text="@string/setReferencesByBluetoothTittle"
-        android:textSize="18sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/deviceChosenTextLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
-        android:paddingVertical="16dp"
-        android:text="@string/showChosenDevice"
-        android:textSize="16sp"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/deviceChosenValue"
-        app:layout_constraintTop_toBottomOf="@id/title" />
-
-    <TextView
-        android:id="@+id/deviceChosenValue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingVertical="16dp"
-        android:text=""
-        android:textSize="16sp"
-        app:layout_constraintLeft_toRightOf="@id/deviceChosenTextLabel"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title" />
-
-    <Button
-        android:id="@+id/btnScanDevices"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
-        android:text="@string/scanBluetoothDevices"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/deviceChosenTextLabel" />
 
     <TextView
         android:id="@+id/lightReferenceLabel"
@@ -63,7 +29,7 @@
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/lightReferenceValue"
-        app:layout_constraintTop_toBottomOf="@id/btnScanDevices" />
+        app:layout_constraintTop_toBottomOf="@+id/title" />
 
     <TextView
         android:id="@+id/lightReferenceValue"
@@ -73,7 +39,7 @@
         android:text="@string/defaultLightReference"
         app:layout_constraintLeft_toRightOf="@id/lightReferenceLabel"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnScanDevices" />
+        app:layout_constraintTop_toBottomOf="@+id/title" />
 
     <com.google.android.material.slider.Slider
         android:id="@+id/lightReferenceSlider"
@@ -173,9 +139,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:layout_marginBottom="32dp"
         android:text="@string/sendReferencesValues"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/temperatureReferenceSlider" />
+        app:layout_constraintBottom_toBottomOf="parent"
+       />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

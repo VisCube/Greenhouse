@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
+import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
 import android.bluetooth.le.BluetoothLeScanner
@@ -17,7 +18,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -29,22 +29,16 @@ abstract class BaseBleActivity : AppCompatActivity() {
     private lateinit var bluetoothManager: BluetoothManager
     private lateinit var bluetoothLeScanner: BluetoothLeScanner
     protected var selectedDevice: BluetoothDevice? = null
-    private var bluetoothGatt: BluetoothGatt? = null
+    protected var bluetoothGatt: BluetoothGatt? = null
     protected val bleDevices = mutableListOf<BluetoothDevice>()
     protected var scanning = false
+    private var awaitingResponse = false
     private val scanHandler = Handler(Looper.getMainLooper())
 
     protected abstract val serviceUUID: UUID
     protected abstract val characteristicUUID: UUID
 
-    protected abstract fun getDeviceChosenValueId(): Int // Уникальный ID для TextView
-
-    @SuppressLint("MissingPermission")
-    protected fun updateSelectedDevice(deviceName: String) {
-        val textView = findViewById<TextView>(getDeviceChosenValueId())
-        textView.text = deviceName
-    }
-
+    protected open fun processCharacteristicValue(value: ByteArray) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +46,7 @@ abstract class BaseBleActivity : AppCompatActivity() {
         requestPermissionsIfNeeded()
     }
 
-    protected fun requestPermissionsIfNeeded() {
+    private fun requestPermissionsIfNeeded() {
         val permissionsToRequest = mutableListOf<String>()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -101,7 +95,7 @@ abstract class BaseBleActivity : AppCompatActivity() {
     protected fun checkBluetooth(): Boolean {
         val bluetoothAdapter = bluetoothManager.adapter
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled) {
-            showToast("Включите Bluetooth для отправки данных")
+            showToast("Включите Bluetooth")
             return false
         }
         return true
@@ -120,11 +114,11 @@ abstract class BaseBleActivity : AppCompatActivity() {
         bluetoothLeScanner.startScan(null, scanSettings, scanCallback)
         scanning = true
 
-        scanHandler.postDelayed({ stopScan() }, 5_000)
+        scanHandler.postDelayed({ stopScan() }, 1_500)
     }
 
     @SuppressLint("MissingPermission")
-    protected fun stopScan() {
+    protected open fun stopScan() {
         if (scanning) {
             bluetoothLeScanner.stopScan(scanCallback)
             scanning = false
@@ -134,7 +128,7 @@ abstract class BaseBleActivity : AppCompatActivity() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun showDeviceSelectionDialog() {
+    protected open fun showDeviceSelectionDialog() {
         if (bleDevices.isEmpty()) {
             showToast("BLE-устройства не найдены")
             return
@@ -145,8 +139,7 @@ abstract class BaseBleActivity : AppCompatActivity() {
         builder.setTitle("Выберите устройство BLE")
         builder.setItems(deviceNames.toTypedArray()) { _, which ->
             selectedDevice = bleDevices[which]
-            updateSelectedDevice(selectedDevice?.name ?: "")
-            //binding.deviceChosen.text = "Выбрано устройство: ${selectedDevice?.name}"
+            saveDeviceToPreferences(selectedDevice!!)
             connectToDevice()
         }
         builder.show()
@@ -167,7 +160,7 @@ abstract class BaseBleActivity : AppCompatActivity() {
     }
 
     @SuppressLint("MissingPermission")
-    protected fun connectToDevice() {
+    protected open fun connectToDevice() {
         bluetoothGatt =
             selectedDevice?.connectGatt(this, false, gattCallback, BluetoothDevice.TRANSPORT_LE)
     }
@@ -178,17 +171,46 @@ abstract class BaseBleActivity : AppCompatActivity() {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
                     gatt.discoverServices()
-                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                } else {
                     gatt.close()
                 }
-            } else {
-                gatt.close()
+            }
+        }
+
+        @SuppressLint("MissingPermission")
+        override fun onCharacteristicWrite(
+            gatt: BluetoothGatt,
+            characteristic: BluetoothGattCharacteristic,
+            status: Int
+        ) {
+            if (status == BluetoothGatt.GATT_SUCCESS && awaitingResponse) {
+                readCharacteristic()
+            }
+        }
+
+
+        @SuppressLint("MissingPermission")
+        override fun onCharacteristicRead(
+            gatt: BluetoothGatt,
+            characteristic: BluetoothGattCharacteristic,
+            status: Int
+        ) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                val value = characteristic.value
+
+                // Проверяем, нужно ли читать этот ответ
+                if (awaitingResponse) {
+                    awaitingResponse = false // Сбрасываем флаг
+                    processCharacteristicValue(value)
+                    resetConnection() // Обрываем соединение
+                }
             }
         }
     }
 
+
     @SuppressLint("MissingPermission")
-    protected fun sendData(dataToSend: String) {
+    private fun readCharacteristic() {
         val service = bluetoothGatt?.getService(serviceUUID)
         if (service == null) {
             showToast("Сервис BLE не найден")
@@ -196,18 +218,34 @@ abstract class BaseBleActivity : AppCompatActivity() {
         }
         val characteristic = service.getCharacteristic(characteristicUUID)
         if (characteristic != null) {
+            bluetoothGatt?.readCharacteristic(characteristic)
+        } else {
+            showToast("Характеристика не найдена")
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    protected fun sendData(dataToSend: String, awaitResponse: Boolean = false) {
+        val service = bluetoothGatt?.getService(serviceUUID)
+        if (service == null) {
+            showToast("Сервис BLE не найден")
+            return
+        }
+        val characteristic = service.getCharacteristic(characteristicUUID)
+        if (characteristic != null) {
+            awaitingResponse = awaitResponse // Устанавливаем флаг ожидания ответа
             val dataBytes = dataToSend.toByteArray()
             characteristic.setValue(dataBytes)
             val success = bluetoothGatt?.writeCharacteristic(characteristic) ?: false
-            if (success) {
-                showToast("Данные успешно отправлены")
-            } else {
+            if (!success) {
                 showToast("Ошибка при отправке данных")
+                awaitingResponse = false // Сбрасываем флаг при ошибке
             }
         } else {
             showToast("Характеристика не найдена")
         }
     }
+
 
     protected fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -219,4 +257,49 @@ abstract class BaseBleActivity : AppCompatActivity() {
         bluetoothGatt?.close()
         bluetoothGatt = null
     }
+
+    @SuppressLint("MissingPermission")
+    protected fun reconnectToDevice() {
+        val sharedPreferences = getSharedPreferences("BLE_PREFS", Context.MODE_PRIVATE)
+        val savedDeviceAddress = sharedPreferences.getString("SAVED_DEVICE", null)
+
+        if (savedDeviceAddress != null) {
+            val bluetoothAdapter = bluetoothManager.adapter
+            val device = bluetoothAdapter.getRemoteDevice(savedDeviceAddress)
+            selectedDevice = device
+            connectToDevice()
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    protected fun deleteDevice() {
+        val sharedPreferences = getSharedPreferences("BLE_PREFS", Context.MODE_PRIVATE)
+        sharedPreferences.edit().remove("SAVED_DEVICE").apply()
+        bluetoothGatt?.disconnect()
+        bluetoothGatt?.close()
+        bluetoothGatt = null
+        selectedDevice = null
+        Thread.sleep(100)
+    }
+
+
+    @SuppressLint("MissingPermission")
+    protected fun saveDeviceToPreferences(device: BluetoothDevice) {
+        val sharedPreferences = getSharedPreferences("BLE_PREFS", Context.MODE_PRIVATE)
+        sharedPreferences.edit()
+            .putString("SAVED_DEVICE", device.address)
+            .apply()
+    }
+
+    @SuppressLint("MissingPermission")
+    protected fun resetConnection() {
+        bluetoothGatt?.disconnect()
+        bluetoothGatt?.close()
+        bluetoothGatt = null
+        Thread.sleep(50)
+        connectToDevice()
+    }
+
+
 }
+

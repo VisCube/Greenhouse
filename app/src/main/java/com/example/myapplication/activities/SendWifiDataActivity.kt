@@ -1,32 +1,21 @@
 package com.example.myapplication.activities
 
 import android.os.Bundle
-import com.example.myapplication.R
 import com.example.myapplication.databinding.ActivitySendWifiDataBinding
 import java.util.UUID
 
-
 class SendWifiDataActivity : BaseBleActivity() {
 
-    override val serviceUUID: UUID = UUID.fromString("12345678-1234-5678-1234-56789abcdef0")
-    override val characteristicUUID: UUID = UUID.fromString ("abcdef01-1234-5678-1234-56789abcdef0")
-    override fun getDeviceChosenValueId(): Int = R.id.deviceChosenValue
+    override val serviceUUID: UUID = UUID.fromString("0000180A-0000-1000-8000-00805f9b34fb")
+    override val characteristicUUID: UUID = UUID.fromString("00002A57-0000-1000-8000-00805f9b34fb")
 
     private lateinit var binding: ActivitySendWifiDataBinding
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySendWifiDataBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        binding.btnScanDevices.setOnClickListener {
-            if (!scanning) {
-                startScan()
-            } else {
-                stopScan()
-            }
-        }
+        reconnectToDevice()
 
         binding.btnSendWifiData.setOnClickListener {
             if (selectedDevice != null) {

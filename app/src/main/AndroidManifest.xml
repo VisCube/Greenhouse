@@ -20,7 +20,7 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.StartActivity"
             android:exported="true"
             android:theme="@style/Theme.MyApplication">
             <intent-filter>
@@ -30,21 +30,17 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".activities.SetReferenceActivity"
-            android:label="Set Reference Values"
-            android:exported="true"/>
-
         <activity android:name=".activities.SendWifiDataActivity"
             android:label="Send Wi-Fi Data"
             android:exported="true"/>
 
-        <activity android:name=".activities.ChangeDeviceIdActivity"
-            android:label="Change device id"
-            android:exported="true"/>
 
         <activity android:name=".activities.SetReferencesByBluetoothActivity"
             android:label="Set references by bluetooth"
+            android:exported="true"/>
+
+        <activity android:name=".activities.GetDataByBLEActivity"
+            android:label="Get data from greenhouse"
             android:exported="true"/>
 
     </application>

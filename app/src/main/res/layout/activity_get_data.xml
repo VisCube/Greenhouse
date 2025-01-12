@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.GetDataByBLEActivity">
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/title"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:padding="16dp"-->
+    <!--        android:text="Просмотр показателей по BLE"-->
+    <!--        android:textSize="32sp"-->
+    <!--        android:textStyle="bold"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+    <TextView
+        android:id="@+id/lightIcon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:text="☀️"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toTopOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/temperatureIcon" />
+
+    <TextView
+        android:id="@+id/temperatureIcon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:text="🌡"
+        android:textSize="32sp"
+        app:layout_constraintBaseline_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/lightIcon"
+        app:layout_constraintRight_toLeftOf="@+id/moistureIcon" />
+
+    <TextView
+        android:id="@+id/moistureIcon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:text="💧"
+        android:textSize="32sp"
+        app:layout_constraintBaseline_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/temperatureIcon"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/lightValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:text="?"
+        android:textSize="16sp"
+        app:layout_constraintBaseline_toTopOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/temperatureIcon"
+        app:layout_constraintTop_toBottomOf="@id/lightIcon" />
+
+    <TextView
+        android:id="@+id/temperatureValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:text="?"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toRightOf="@id/lightValue"
+        app:layout_constraintRight_toLeftOf="@+id/moistureValue"
+        app:layout_constraintTop_toBottomOf="@id/temperatureIcon" />
+
+    <TextView
+        android:id="@+id/moistureValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:text="?"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toRightOf="@id/temperatureIcon"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/moistureIcon" />
+
+    <TextView
+        android:id="@+id/lightValueType"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="%"
+        android:textSize="32sp"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/temperatureValueType"
+        app:layout_constraintTop_toBottomOf="@id/lightValue"
+
+        />
+
+    <TextView
+        android:id="@+id/temperatureValueType"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="°C"
+        android:textSize="32sp"
+        app:layout_constraintLeft_toRightOf="@id/lightValueType"
+        app:layout_constraintRight_toLeftOf="@+id/moistureValueType"
+        app:layout_constraintTop_toBottomOf="@id/temperatureValue" />
+
+    <TextView
+        android:id="@+id/moistureValueType"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="%"
+        android:textSize="32sp"
+        app:layout_constraintLeft_toRightOf="@id/temperatureValueType"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/moistureValue" />
+
+
+    <TextView
+        android:id="@+id/lightActuatorIcon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:gravity="center_horizontal"
+        android:text="💡"
+        android:textSize="32sp"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/coolingIcon"
+        app:layout_constraintTop_toBottomOf="@id/lightValueType" />
+
+    <TextView
+        android:id="@+id/coolingIcon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:gravity="center_horizontal"
+        android:text="️❄️"
+        android:textSize="32sp"
+        app:layout_constraintLeft_toRightOf="@id/lightActuatorIcon"
+        app:layout_constraintRight_toLeftOf="@+id/heatIcon"
+        app:layout_constraintTop_toBottomOf="@id/temperatureValueType" />
+
+    <TextView
+        android:id="@+id/heatIcon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:gravity="center_horizontal"
+
+        android:text="🔥"
+        android:textSize="32sp"
+        app:layout_constraintLeft_toRightOf="@id/coolingIcon"
+        app:layout_constraintRight_toLeftOf="@+id/wateringIcon"
+        app:layout_constraintTop_toBottomOf="@id/moistureValueType" />
+
+    <TextView
+        android:id="@+id/wateringIcon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:gravity="center_horizontal"
+
+        android:text="💧"
+        android:textSize="32sp"
+        app:layout_constraintLeft_toRightOf="@id/heatIcon"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/moistureValueType" />
+
+
+    <TextView
+        android:id="@+id/lightActuatorState"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="⚪️"
+        android:textSize="32sp"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/coolingState"
+        app:layout_constraintTop_toBottomOf="@id/lightActuatorIcon" />
+
+    <TextView
+        android:id="@+id/coolingState"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="️⚪️"
+        android:textSize="32sp"
+        app:layout_constraintLeft_toRightOf="@id/lightActuatorState"
+        app:layout_constraintRight_toLeftOf="@+id/heatState"
+        app:layout_constraintTop_toBottomOf="@id/heatIcon" />
+
+    <TextView
+        android:id="@+id/heatState"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="⚪️"
+        android:textSize="32sp"
+        app:layout_constraintLeft_toRightOf="@id/coolingState"
+        app:layout_constraintRight_toLeftOf="@+id/wateringState"
+        app:layout_constraintTop_toBottomOf="@id/heatIcon" />
+
+    <TextView
+        android:id="@+id/wateringState"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="⚪️"
+        android:textSize="32sp"
+        app:layout_constraintLeft_toRightOf="@id/heatState"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/wateringIcon" />
+
+    <Button
+        android:id="@+id/refreshButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="10dp"
+        android:text="Обновить"
+        app:layout_constraintBottom_toTopOf="@+id/sendNewRefButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/sendNewRefButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="Обновить эталонные значения"
+        app:layout_constraintBottom_toTopOf="@+id/sendWifiDataButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/sendWifiDataButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="Отправить данные Wi-Fi сети"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/changeBLEDevice"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+
+        />
+
+    <Button
+        android:id="@+id/changeBLEDevice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:text="Выбрать устройство"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/deviceChosenTextLabel"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginEnd="4dp"-->
+    <!--        android:paddingVertical="16dp"-->
+    <!--        android:text="@string/showChosenDevice"-->
+    <!--        android:textSize="16sp"-->
+    <!--        app:layout_constraintHorizontal_chainStyle="packed"-->
+    <!--        app:layout_constraintLeft_toLeftOf="parent"-->
+    <!--        app:layout_constraintRight_toLeftOf="@id/deviceChosenValue"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/title" />-->
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/deviceChosenValue"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:paddingVertical="16dp"-->
+    <!--        android:text=""-->
+    <!--        android:textSize="16sp"-->
+    <!--        app:layout_constraintLeft_toRightOf="@id/deviceChosenTextLabel"-->
+    <!--        app:layout_constraintRight_toRightOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/title" />-->
+
+    <!--    <Button-->
+    <!--        android:id="@+id/btnScanDevices"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginHorizontal="32dp"-->
+    <!--        android:text="@string/scanBluetoothDevices"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/deviceChosenTextLabel" />-->
+
+    <!--    <Button-->
+    <!--        android:id="@+id/sendDataButton"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_margin="16dp"-->
+    <!--        android:text="Запросить данные"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/btnScanDevices"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/receivedDataTextView"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:layout_margin="16dp"-->
+    <!--        android:text=""-->
+    <!--        android:textSize="28sp"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/sendDataButton"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"/>-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>
