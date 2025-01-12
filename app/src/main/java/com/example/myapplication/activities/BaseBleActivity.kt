@@ -39,7 +39,7 @@ abstract class BaseBleActivity : AppCompatActivity() {
     protected abstract val serviceUUID: UUID
     protected abstract val characteristicUUID: UUID
     protected abstract fun processCharacteristicValue(value: ByteArray)
-    protected open fun onDeviceReady() {    }
+    protected open fun onDeviceReady() {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,13 +48,17 @@ abstract class BaseBleActivity : AppCompatActivity() {
     }
 
     private fun requestPermissionsIfNeeded() {
-        val permissions = when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> listOf(
-                Manifest.permission.BLUETOOTH_CONNECT,
-                Manifest.permission.BLUETOOTH_SCAN
-            )
+        val permissions = mutableListOf<String>()
+        permissions.add(Manifest.permission.ACCESS_FINE_LOCATION)
 
-            else -> listOf(Manifest.permission.ACCESS_FINE_LOCATION)
+        permissions.add(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissions.addAll(
+                listOf(
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.BLUETOOTH_SCAN
+                )
+            )
         }
 
         val neededPermissions = permissions.filterNot {
@@ -197,7 +201,7 @@ abstract class BaseBleActivity : AppCompatActivity() {
 
     @SuppressLint("MissingPermission")
     protected fun sendData(data: String, requiresResponse: Boolean = false) {
-        if (!isDeviceReady ) {
+        if (!isDeviceReady) {
             return
         }
         val service = bluetoothGatt?.getService(serviceUUID)
